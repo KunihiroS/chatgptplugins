@@ -1,0 +1,106 @@
+openapi: 3.0.1
+info:
+  title: TumblrPlugin
+  description: 
+    1. The plugin is activated in the such below user prompts.
+    "Want to check useful wisdom in this situation."
+    "I need funny story!! I want to make my girl laugh!!"
+    "I am now on facing difficulties in my job. How do I make my mind set as usual...?"
+    2. GPT check the context of user's input, whether there is needed call Plugin for Tumblr service.
+    3. "1" cases each are needing Tumblr call, in these example the follwing tag is requested to get posts list from Tumblr service via Plugin.
+    "Want to check useful wisdom in this situation." -> Tag "Wisdom"
+    "I need funny story!! I want to make my girl laugh!!" -> Tag "Funny", "LoL"
+    "I am now on facing difficulties in my job. How do I make my mind set as usual...?" -> Tag "Solution"
+    The above paired tag are just simple example, actually GPT analyze user's input and think and choose the best tag word.
+    4. GPT get the specified tagged posts from Tumblr service via Plugin. There must be a list of posts. GPT analyze the retrieved posts and choose the most suitable one for the user's input.
+    5. GPT reponoses ChatGPT response including the choosen post to user.
+    
+  version: 'v1'
+servers:
+  - url: http://localhost:5003
+paths:
+  /todos/{username}:
+    get:
+      operationId: getTodos
+      summary: Get the list of todos
+      parameters:
+      - in: path
+        name: username
+        schema:
+            type: string
+        required: true
+        description: The name of the user.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getTodosResponse'
+    post:
+      operationId: addTodo
+      summary: Add a todo to the list
+      parameters:
+      - in: path
+        name: username
+        schema:
+            type: string
+        required: true
+        description: The name of the user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addTodoRequest'
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: deleteTodo
+      summary: Delete a todo from the list
+      parameters:
+      - in: path
+        name: username
+        schema:
+            type: string
+        required: true
+        description: The name of the user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/deleteTodoRequest'
+      responses:
+        "200":
+          description: OK
+
+components:
+  schemas:
+    getTodosResponse:
+      type: object
+      properties:
+        todos:
+          type: array
+          items:
+            type: string
+          description: The list of todos.
+    addTodoRequest:
+      type: object
+      required:
+      - todo
+      properties:
+        todo:
+          type: string
+          description: The todo to add to the list.
+          required: true
+    deleteTodoRequest:
+      type: object
+      required:
+      - todo_idx
+      properties:
+        todo_idx:
+          type: integer
+          description: The index of the todo to delete.
+          required: true
